@@ -1,0 +1,47 @@
+
+
+DEFINE FUNCTION coes2rv(coes,deg <-- False, mu=pd.earth['mu'] ):
+
+    IF deg:
+
+        a,e,i,ta,aop,raan <-- coes
+
+        i *= d2r
+
+        ta *= d2r
+
+        aop *= d2r
+
+        raan *= d2r
+
+    ELSE:
+
+        a,e,i,ta,aop,raan <-- coes
+
+
+
+    E <-- ecc_anomaly([ta,e],'tae')
+
+
+
+    r_norm <-- a*(1-e**2)/(1+e*np.cos(ta))
+
+
+
+    r_perif <-- r_norm*np.array([m.cos(ta),m.sin(ta),0])
+
+    v_perif <-- m.sqrt(mu*a)/r_norm*np.array([-m.sin(E),m.cos(E)*m.sqrt(1-e**2),0])
+
+
+
+    perif2eci <-- np.transpose(eci2perif(raan,aop,i))
+
+
+
+    r <-- np.dot(perif2eci,r_perif)
+
+    v <-- np.dot(perif2eci, v_perif)
+
+
+
+    RETURN r,v
